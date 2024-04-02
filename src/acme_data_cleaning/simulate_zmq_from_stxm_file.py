@@ -113,6 +113,7 @@ def main(argv=sys.argv):
     pub = context.socket(zmq.PUB)
     pub.bind("tcp://*:37012")
 
+    time.sleep(1)
     # Default mask, TODO: should be loaded from a file
     default_mask = np.zeros([960,960])
     default_mask[:480,840:] = 1
