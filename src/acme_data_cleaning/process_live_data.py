@@ -1,18 +1,19 @@
-import time
-import asyncio
-import os
-import zmq
-import h5py
-from contextlib import contextmanager
-from acme_data_cleaning import image_handling, file_handling, config_handling, illumination_init, nersc
 import argparse
+import copy
+import os
+import pathlib
 import sys
-import torch as t
+import time
+from contextlib import contextmanager
+
 import numpy as np
+import torch as t
+import zmq
 from cosmicstreams.PreprocessorStream import PreprocessorStream
 from scipy import constants
-import copy
 
+from acme_data_cleaning import (config_handling, file_handling,
+                                illumination_init, image_handling, nersc)
 
 # How should I structure this? I'll get 4 kinds of events, and each event
 # needs to:
