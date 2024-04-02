@@ -91,20 +91,27 @@ def process_file(stxm_file, pub_socket):
     pub_socket.send_pyobj(stop_event)
 
 def main(argv=sys.argv):
+    stxm_file_env = os.getenv('STXM_FILE_PATH')
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('stxm_file', nargs='+', type=str, help='The file or files to process')
+    parser.add_argument('stxm_file', nargs='*', type=str, help='The file or files to process')
     
     
     args = parser.parse_args()
+
+    if stxm_file_env:
+        stxm_filenames = [stxm_file_env]
+    else:
+        stxm_filenames = args.stxm_file
+        if not stxm_filenames:
+            print("Error: No STXM file specified.")
+            sys.exit(1)
 
     # Define the socket to publish patterns on
     context = zmq.Context()
     pub = context.socket(zmq.PUB)
     pub.bind("tcp://*:37012")
-    
-    stxm_filenames = args.stxm_file
 
     # Default mask, TODO: should be loaded from a file
     default_mask = np.zeros([960,960])
