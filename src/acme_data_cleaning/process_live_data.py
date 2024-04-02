@@ -197,10 +197,22 @@ def make_dataset_name(state):
 
 
 def make_output_filename(state):
+    # Attempt to use the directory of the 'header' file from 'state'
+    header_path = pathlib.Path(state['metadata']['header'])
+    folder = header_path.parent
+    
+    if not folder.exists():
+        folder = pathlib.Path("/outputs")
+        if not folder.exists():
+            raise FileNotFoundError("Neither the header file's directory nor '/outputs' exists.")
+    
+    
     folder = os.path.dirname(state['metadata']['header'])
     dataset_name = state['identifier']
 
-    return os.path.join(folder, f"{dataset_name}.cxi")
+    output_file_path = folder / f"{dataset_name}.cxi"
+    
+    return str(output_file_path)
 
 
 def process_dark_event(cxi_file, state, event, config):
