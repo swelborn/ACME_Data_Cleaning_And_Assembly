@@ -7,13 +7,17 @@ chain
 
 Author: Abe Levitan, alevitan@mit.edu
 """
-import sys
 import argparse
-import numpy as np
-import h5py
-import zmq
+import os
+import sys
 import time
+
+import h5py
+import numpy as np
+import zmq
+
 from acme_data_cleaning import file_handling
+
 
 def process_file(stxm_file, pub_socket):
     #
