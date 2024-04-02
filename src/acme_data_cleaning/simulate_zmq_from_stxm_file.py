@@ -29,7 +29,7 @@ def process_file(stxm_file, pub_socket):
     print('start event')
     start_event = {
         'event': 'start',
-        'data': metadata,
+        'metadata': metadata,
     }
     
     pub_socket.send_pyobj(start_event)
