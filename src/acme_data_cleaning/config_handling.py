@@ -4,8 +4,6 @@ import pathlib
 import h5py
 import numpy as np
 import torch as t
-import h5py
-
 
 __all__ = [
     'get_configuration',
