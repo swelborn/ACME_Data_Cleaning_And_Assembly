@@ -12,8 +12,8 @@ import argparse
 import numpy as np
 import h5py
 import zmq
-from acme_data_cleaning import image_handling, file_handling
 import time
+from acme_data_cleaning import file_handling
 
 def process_file(stxm_file, pub_socket):
     #
