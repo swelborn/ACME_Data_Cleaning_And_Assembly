@@ -1,6 +1,7 @@
 import json
-import importlib.resources
-import importlib_resources
+import pathlib
+
+import h5py
 import numpy as np
 import torch as t
 import h5py
@@ -14,20 +15,24 @@ __all__ = [
     'load_mask'
 ]
 
+
+HERE = pathlib.Path(__file__).parent
+
 def get_configuration():
     """This loads a configuration dictionary from the various config files.
     """
     
-    # Then we load the configuration options
-    # package_root = importlib.resources.files('acme_data_cleaning')
-    package_root = importlib_resources.files('acme_data_cleaning')
     # This loads the default configuration first. This file is managed by
     # git and should not be edited by a user
-    config = json.loads(package_root.joinpath('defaults.json').read_text())\
+    config_file_path = HERE / 'defaults.json'
+    
+    # Read the content of 'defaults.json'
+    with open(config_file_path, 'r') as file:
+        config = json.load(file)
 
     # And now, if the user has installed an optional config file, we allow it
     # to override what is in defaults.json
-    config_file_path = package_root.joinpath('config.json')
+    config_file_path = HERE / 'config.json'
 
     # not sure if this works with zipped packages
     if config_file_path.exists():
@@ -36,7 +41,7 @@ def get_configuration():
     config['shear'] = np.array(config['shear'])
 
     if 'mask' not in config:
-        config['mask'] = package_root.joinpath('default_mask.h5')
+        config['mask'] = HERE / 'default_mask.h5'
 
     # This is how h5py expects the input, so I convert it upon load
     if config['compression'].lower().strip() == 'none':
