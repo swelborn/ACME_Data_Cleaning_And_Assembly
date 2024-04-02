@@ -19,6 +19,7 @@ services:
       context: .
       dockerfile: ./docker/subscriber/Dockerfile
     volumes:
+      - ./docker/subscriber/config.json:/usr/src/app/acme_data_cleaning/config.json
       - ./src:/usr/src/app
     environment:
       - PYTHONUNBUFFERED=1
