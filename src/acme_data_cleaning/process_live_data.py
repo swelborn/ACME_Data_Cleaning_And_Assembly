@@ -207,7 +207,6 @@ def make_output_filename(state):
             raise FileNotFoundError("Neither the header file's directory nor '/outputs' exists.")
     
     
-    folder = os.path.dirname(state['metadata']['header'])
     dataset_name = state['identifier']
 
     output_file_path = folder / f"{dataset_name}.cxi"
