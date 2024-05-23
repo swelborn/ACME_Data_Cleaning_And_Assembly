@@ -44,7 +44,7 @@ def process_file(stxm_file, pub_socket):
 
     # Now I should iterate through the darks, emitting "dark" events
     for idx, dark_set in enumerate(darks_iterator):
-        time.sleep(0.1)
+        # time.sleep(0.)
         for n, dark in enumerate(dark_set):
             if n == 0:
                 dwell = metadata["dwell2"]
