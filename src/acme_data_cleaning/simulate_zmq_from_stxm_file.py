@@ -7,6 +7,7 @@ chain
 
 Author: Abe Levitan, alevitan@mit.edu
 """
+
 import argparse
 import os
 import sys
@@ -26,78 +27,81 @@ def process_file(stxm_file, pub_socket):
     metadata = file_handling.read_metadata_from_stxm(stxm_file)
     translations = file_handling.read_translations_from_stxm(stxm_file)
 
-    print('start event')
+    print("start event")
     start_event = {
-        'event': 'start',
-        'metadata': metadata,
+        "event": "start",
+        "metadata": metadata,
     }
-    
+
     pub_socket.send_pyobj(start_event)
     # At this point, I should send out a "start" event"
 
     n_exp_per_point = 2
-    
+
     darks_iterator = file_handling.read_darks_from_stxm(
-        stxm_file, n_exp_per_point=n_exp_per_point)
+        stxm_file, n_exp_per_point=n_exp_per_point
+    )
 
     # Now I should iterate through the darks, emitting "dark" events
     for idx, dark_set in enumerate(darks_iterator):
         time.sleep(0.1)
         for n, dark in enumerate(dark_set):
             if n == 0:
-                dwell = metadata['dwell2']
+                dwell = metadata["dwell2"]
             else:
-                dwell = metadata['dwell1']
-            print('Frame Event (dark)', idx)
+                dwell = metadata["dwell1"]
+            print("Frame Event (dark)", idx)
             event = {
-                'event': 'frame',
-                'data': {
-                    'ccd_mode': 'dark',
-                    'ccd_frame': dark,
-                    'dwell': dwell,
-                }
+                "event": "frame",
+                "data": {
+                    "ccd_mode": "dark",
+                    "ccd_frame": dark,
+                    "dwell": dwell,
+                },
             }
             pub_socket.send_pyobj(event)
-    
-    exposure_iterator = file_handling.read_exposures_from_stxm(
-        stxm_file, n_exp_per_point=n_exp_per_point)
 
-    for idx,(translation, exposure_set) \
-        in enumerate(zip(translations, exposure_iterator)):
-        time.sleep(0.5)
+    exposure_iterator = file_handling.read_exposures_from_stxm(
+        stxm_file, n_exp_per_point=n_exp_per_point
+    )
+
+    for idx, (translation, exposure_set) in enumerate(
+        zip(translations, exposure_iterator)
+    ):
         for n, exposure in enumerate(exposure_set):
             if n == 0:
-                dwell = metadata['dwell2']
+                dwell = metadata["dwell2"]
             else:
-                dwell = metadata['dwell1']
-            print('Frame Event (exposure)', idx)
+                dwell = metadata["dwell1"]
+            print("Frame Event (exposure)", idx)
             event = {
-                'event': 'frame',
-                'data' : {
-                    'ccd_mode': 'exp',
-                    'ccd_frame': exposure,
-                    'xPos': translation[0],
-                    'yPos': translation[1],
-                    'index': idx,
-                    'dwell': dwell,
-                }
+                "event": "frame",
+                "data": {
+                    "ccd_mode": "exp",
+                    "ccd_frame": exposure,
+                    "xPos": translation[0],
+                    "yPos": translation[1],
+                    "index": idx,
+                    "dwell": dwell,
+                },
             }
             pub_socket.send_pyobj(event)
 
-    print('Stop event')
+    print("Stop event")
     # Then, I finally can emit a "stop" event
-    stop_event = {'event': 'stop',
-                  'abort': False}
+    stop_event = {"event": "stop", "abort": False}
     pub_socket.send_pyobj(stop_event)
 
+
 def main(argv=sys.argv):
-    stxm_file_env = os.getenv('STXM_FILE_PATH')
+    stxm_file_env = os.getenv("STXM_FILE_PATH")
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('stxm_file', nargs='*', type=str, help='The file or files to process')
-    
-    
+    parser.add_argument(
+        "stxm_file", nargs="*", type=str, help="The file or files to process"
+    )
+
     args = parser.parse_args()
 
     if stxm_file_env:
@@ -115,17 +119,15 @@ def main(argv=sys.argv):
 
     time.sleep(1)
     # Default mask, TODO: should be loaded from a file
-    default_mask = np.zeros([960,960])
-    default_mask[:480,840:] = 1
+    default_mask = np.zeros([960, 960])
+    default_mask[:480, 840:] = 1
 
     for stxm_filename in stxm_filenames:
-        print('Processing',stxm_filename)
-        
-        with h5py.File(stxm_filename, 'r') as stxm_file:
-            process_file(stxm_file, pub)
-            
-    
-    
-if __name__ == '__main__':
-    sys.exit(main())
+        print("Processing", stxm_filename)
 
+        with h5py.File(stxm_filename, "r") as stxm_file:
+            process_file(stxm_file, pub)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
